@@ -1,11 +1,5 @@
 
 import struct
-class LVX_Reader:
-    def __init__(self):
-        self.public_header = LvxFilePublicHeader()
-        self.private_header = LvxFilePrivateHeader()
-        self.device_info_list = [] # of LvxDeviceInfo()
-
 kMaxPointSize = 1500
 
 """
@@ -19,7 +13,7 @@ kMaxPointSize = 1500
           uint32_t magic_code;
         } LvxFilePublicHeader;
 """
-class LvxFilePublicHeader():
+class LvxFilePublicHeader:
 
     def __init__(self):
         self.signature =[]
@@ -45,7 +39,7 @@ class LvxFilePublicHeader():
         } LvxFilePrivateHeader;
         """
 
-class LvxFilePrivateHeader():
+class LvxFilePrivateHeader:
 
     def __init__(self):
         self.frame_duration  = 0
@@ -77,7 +71,7 @@ class LvxFilePrivateHeader():
           float z;
         } LvxDeviceInfo;
 """
-class LvxDeviceInfo():
+class LvxDeviceInfo:
 
     def __init__(self):
         self.lidar_broadcast_code  = []
@@ -92,7 +86,7 @@ class LvxDeviceInfo():
         self.y = 0
         self.z = 0
 
-        self.s = struct.Struct('16B 16B B B B 6f')
+        self.s = struct.Struct('16B 16B 3B 6f')
 
     def __len__(self):
         return self.s.size
@@ -112,7 +106,35 @@ class LvxDeviceInfo():
         self.z = v[40]
 
 
+"""
 
+
+
+typedef struct {
+  uint64_t current_offset;
+  uint64_t next_offset;
+  uint64_t frame_index;
+} FrameHeader;
+
+
+
+  """
+class FrameHeader:
+
+    def __init__(self):
+        self.current_offset  = 0
+        self.next_offset  = 0
+        self.frame_index  = 0
+        self.s = struct.Struct('3Q')
+
+    def __len__(self):
+        return self.s.size
+
+    def unpack(self, raw):
+        v = self.s.unpack(raw)
+        self.current_offset  = v[0]
+        self.next_offset  = v[1]
+        self.frame_index  = v[2]
 
 """
 #define kMaxPointSize 1500
@@ -132,18 +154,37 @@ typedef struct {
 } LvxBasePackDetail;
 """
 
+class BasePackDetail:
+
+    def __init__(self):
+        self.device_index  = 0
+        self.version = 0
+        self.port_id = 0
+        self.lidar_index = 0
+        self.rsvd = 0
+        self.error_code = 0
+        self.timestamp_type = 0
+        self.data_type = 0
+        self.timestamp = []
+        self.raw_point = []
+        self.pack_size = 0
+        self.s = struct.Struct(f'5B I 2B 8B {kMaxPointSize}B I')
+
+    def __len__(self):
+        return self.s.size
+
+    def unpack(self, raw):
+        v = self.s.unpack(raw)
+        self.device_index  = v[0]
+        self.version = v[1]
+        self.port_id = v[2]
+        self.lidar_index = v[3]
+        self.rsvd = v[4]
+        self.error_code = v[5]
+        self.timestamp_type = v[6]
+        self.data_type = v[7]
+        self.timestamp = v[8:16]
+        self.raw_point = v[16:(16+kMaxPointSize)]
+        self.pack_size = v[16+kMaxPointSize]
 
 
-"""
-
-
-
-typedef struct {
-  uint64_t current_offset;
-  uint64_t next_offset;
-  uint64_t frame_index;
-} FrameHeader;
-
-
-
-  """
