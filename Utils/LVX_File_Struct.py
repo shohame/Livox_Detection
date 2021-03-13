@@ -19,7 +19,7 @@ class LvxFilePublicHeader:
         self.signature =[]
         self .version = []
         self.magic_code  = 0
-        self.s = struct.Struct('16B 4B I')
+        self.s = struct.Struct('<16B 4B I')
 
     def __len__(self):
         return self.s.size
@@ -44,7 +44,7 @@ class LvxFilePrivateHeader:
     def __init__(self):
         self.frame_duration  = 0
         self.device_count  = 0
-        self.s = struct.Struct('I B')
+        self.s = struct.Struct('<I B')
 
     def __len__(self):
         return self.s.size
@@ -86,7 +86,7 @@ class LvxDeviceInfo:
         self.y = 0
         self.z = 0
 
-        self.s = struct.Struct('16B 16B 3B 6f')
+        self.s = struct.Struct('<16B 16B 3B 6f')
 
     def __len__(self):
         return self.s.size
@@ -125,7 +125,7 @@ class FrameHeader:
         self.current_offset  = 0
         self.next_offset  = 0
         self.frame_index  = 0
-        self.s = struct.Struct('3Q')
+        self.s = struct.Struct('<3Q')
 
     def __len__(self):
         return self.s.size
@@ -168,7 +168,7 @@ class BasePackDetail:
         self.timestamp = []
         self.raw_point = []
         self.pack_size = 0
-        self.s = struct.Struct(f'5B I 2B 8B {kMaxPointSize}B I')
+        self.s = struct.Struct(f'<5B I 2B 8B {kMaxPointSize}B I')
 
     def __len__(self):
         return self.s.size

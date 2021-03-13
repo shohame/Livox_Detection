@@ -19,26 +19,32 @@ class LVX_Reader:
         self.f = open(lvx_fn,'rb')
 
         self.ReadStruct(self.public_header)
+        print ('After public_header file position:', self.f.tell())
         self.ReadStruct(self.private_header)
-
+        print('After private_header file position:', self.f.tell())
         for i in range(self.private_header.device_count):
             device_info = LvxDeviceInfo()
             self.ReadStruct(device_info)
             self.device_info_list.append(device_info)
+        print('After device_info file position:', self.f.tell())
 
     def ReadFrame(self):
         self.ReadStruct(self.frame_header)
         self.ReadStruct(self.base_pack_detail)
+        return self.base_pack_detail.raw_point
 
     def close(self):
         self.f.close()
+# After public_header file position: 24
+# After private_header file position: 29
+# After device_info file position: 88
 
 if __name__ == "__main__":
     lvx_file = LVX_Reader()
-    lvx_file.open('../lvx/2021-02-05_11-57-52.lvx')
+    lvx_file.open('../lvx/2021-03-13_20-36-51.lvx')
 
     while(True):
-        lvx_file.ReadFrame()
+        frm = lvx_file.ReadFrame()
         if not frm:
             break
 
