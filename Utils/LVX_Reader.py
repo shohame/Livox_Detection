@@ -41,7 +41,7 @@ class LVX_Reader:
 
 if __name__ == "__main__":
     lvx_file = LVX_Reader()
-    lvx_file.open('../lvx/2021-03-13_20-36-51.lvx')
+    lvx_file.open('../lvx/2021-04-01 19-26-44.lvx')
 
     while(True):
         frm = lvx_file.ReadFrame()
